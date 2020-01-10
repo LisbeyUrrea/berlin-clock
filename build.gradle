@@ -14,5 +14,7 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'pl.pragmatists', name: 'JUnitParams', version: '1.1.1'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.+'
+
 
 }
