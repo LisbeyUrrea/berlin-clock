@@ -1,6 +1,5 @@
 package mocks;
 
-import javafx.beans.binding.When;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Assert;
@@ -8,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.*;
 
@@ -44,5 +42,184 @@ public class ManagerUserBlTest {
         Assert.assertEquals(expect, result);
         verify(userConfigRepository, times(1)).passwordRegExp();
 
+    }
+
+    @Test
+    @Parameters({
+            "lisbey, false",
+            "lisbey@, false",
+            "lisbey@hotmail, false",
+            "@hotmail.com, false",
+            "lisbey@hotmail.com, true",
+    })
+    public void methodValidateEmailShouldValidateIfEmailIsCorrect(String email, boolean expect) {
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+
+        boolean result = managerUserBl.validateEmail(email);
+
+        Assert.assertEquals(expect, result);
+        verify(userConfigRepository, times(1)).emailRegExp();
+
+    }
+
+    @Test
+    @Parameters({
+            "12345, false",
+            "lisbey*urrea, false",
+            "lisbey urrea, false",
+            "lisbey45, false",
+            "lisbeyUrrea, true",
+    })
+    public void methodValidateNickNameShouldValidateIfNickNameIsCorrect(String nickName, boolean expect) {
+        when(userConfigRepository.nickNameRegExp()).thenReturn("^[a-zA-Z]*$");
+
+        boolean result = managerUserBl.validateNickName(nickName);
+
+        Assert.assertEquals(expect, result);
+        verify(userConfigRepository, times(1)).nickNameRegExp();
+
+    }
+
+
+    @Test
+    @Parameters({
+            " , false",
+            ", false",
+            "lisbey, true",
+            "1123456789, true"
+    })
+    public void methodValidateNullOrEmptyShouldValidateIfTheParamIsNullOrEmpty(String param, boolean expect) {
+        boolean result = managerUserBl.validateNullOrEmpty(param);
+        assertEquals(expect,result);
+    }
+
+    @Test
+    @Parameters({
+            "lisbey, false",
+            "1587*, false",
+            "1587 4512, false",
+            "1587?, false",
+            "1123456789, true"
+    })
+    public void methodIsNumberShouldValidateIfTheParamIsANumber(String number, boolean expect) {
+        boolean result = managerUserBl.isNumber(number);
+        assertEquals(expect,result);
+    }
+
+
+    @Test
+    public void methodRegisterUserShouldReturnUsuarioResgistradoExitosamenteWhenAllParamsAreCorrect() {
+        UserManager user = new UserManager("Lisbey",
+                "Urrea",
+                "urlisbey@hotmail.com",
+                "3137189233",
+                "w3Unpocodet0d0",
+                "lisbeyUrrea");
+
+        String expect = "¡Usuario resgistrado exitosamente!";
+        when(userConfigRepository.registerUser(user)).thenReturn(expect);
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+        when(userConfigRepository.passwordRegExp()).thenReturn("^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{8,16}$");
+        when(userConfigRepository.nickNameRegExp()).thenReturn("^[a-zA-Z]*$");
+
+        String result = managerUserBl.registerUser(user);
+
+        assertEquals(expect,result);
+        verify(userConfigRepository,times(1)).registerUser(user);
+        verify(userConfigRepository,times(1)).emailRegExp();
+        verify(userConfigRepository,times(1)).passwordRegExp();
+        verify(userConfigRepository,times(1)).nickNameRegExp();
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void methodIsValidUserShouldReturnIllegalArgumentExceptionWhenSomeLastNameIsEmpty() {
+
+        UserManager user = new UserManager("", null, "lisbey@hotmail.com","3137189233","password", "lisbeyUrrea");
+        String expect = "¡Usuario resgistrado exitosamente!";
+        when(userConfigRepository.registerUser(user)).thenReturn(expect);
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+        when(userConfigRepository.passwordRegExp()).thenReturn("^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{8,16}$");
+
+        managerUserBl.registerUser(user);
+        verify(userConfigRepository,times(0)).registerUser(user);
+        verify(userConfigRepository,times(0)).emailRegExp();
+        verify(userConfigRepository,times(0)).passwordRegExp();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void methodIsValidUserShouldReturnIllegalArgumentExceptionWhenSomeMobileIsEmpty() {
+
+        UserManager user = new UserManager("Lisbey", "Urrea", "",null,"password", "lisbeyUrrea");
+        String expect = "¡Usuario resgistrado exitosamente!";
+        when(userConfigRepository.registerUser(user)).thenReturn(expect);
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+        when(userConfigRepository.passwordRegExp()).thenReturn("^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{8,16}$");
+
+        managerUserBl.registerUser(user);
+        verify(userConfigRepository,times(0)).registerUser(user);
+        verify(userConfigRepository,times(0)).emailRegExp();
+        verify(userConfigRepository,times(0)).passwordRegExp();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void methodIsValidUserShouldReturnIllegalArgumentExceptionWhenSomePasswordIsEmpty() {
+
+        UserManager user = new UserManager("Lisbey", "Urrea", "lisbey@hotmail.com","3137189233","", null);
+        String expect = "¡Usuario resgistrado exitosamente!";
+        when(userConfigRepository.registerUser(user)).thenReturn(expect);
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+        when(userConfigRepository.passwordRegExp()).thenReturn("^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{8,16}$");
+
+        managerUserBl.registerUser(user);
+        verify(userConfigRepository,times(0)).registerUser(user);
+        verify(userConfigRepository,times(0)).emailRegExp();
+        verify(userConfigRepository,times(0)).passwordRegExp();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void methodRegisterUserShouldReturnIllegalArgumentExceptionWhenEmailIsIncorrect() {
+
+        UserManager user = new UserManager("Lisbey", "Urrea", "@hotmail.com","3137189233","w3Unpocodet0d0", "lisbeyUrrea");
+        String expect = "¡Usuario resgistrado exitosamente!";
+        when(userConfigRepository.registerUser(user)).thenReturn(expect);
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+
+        managerUserBl.registerUser(user);
+        verify(userConfigRepository,times(0)).registerUser(user);
+        verify(userConfigRepository,times(1)).emailRegExp();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void methodRegisterUserShouldReturnIllegalArgumentExceptionWhenPasswordIsIncorrect() {
+
+        UserManager user = new UserManager("Lisbey", "Urrea", "lisbey@hotmail.com","3137189233","password", "lisbeyUrrea");
+        String expect = "¡Usuario resgistrado exitosamente!";
+        when(userConfigRepository.registerUser(user)).thenReturn(expect);
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+        when(userConfigRepository.passwordRegExp()).thenReturn("^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{8,16}$");
+
+        managerUserBl.registerUser(user);
+        verify(userConfigRepository,times(0)).registerUser(user);
+        verify(userConfigRepository,times(1)).emailRegExp();
+        verify(userConfigRepository,times(1)).passwordRegExp();
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void methodRegisterUserShouldReturnIllegalArgumentExceptionWhenNickNameIsIncorrect() {
+
+        UserManager user = new UserManager("Lisbey", "Urrea", "lisbey@hotmail.com","3137189233","w3Unpocodet0d0", "lisbey Urrea");
+        String expect = "¡Usuario resgistrado exitosamente!";
+        when(userConfigRepository.registerUser(user)).thenReturn(expect);
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+        when(userConfigRepository.passwordRegExp()).thenReturn("^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{8,16}$");
+        when(userConfigRepository.nickNameRegExp()).thenReturn("^[a-zA-Z]*$");
+
+        managerUserBl.registerUser(user);
+        verify(userConfigRepository,times(0)).registerUser(user);
+        verify(userConfigRepository,times(1)).emailRegExp();
+        verify(userConfigRepository,times(1)).passwordRegExp();
+        verify(userConfigRepository,times(1)).nickNameRegExp();
     }
 }
