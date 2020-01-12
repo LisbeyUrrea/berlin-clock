@@ -222,4 +222,21 @@ public class ManagerUserBlTest {
         verify(userConfigRepository,times(1)).passwordRegExp();
         verify(userConfigRepository,times(1)).nickNameRegExp();
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void methodRegisterUserShouldReturnIllegalArgumentExceptionWhenMobileIsNotANumber() {
+
+        UserManager user = new UserManager("Lisbey", "Urrea", "lisbey@hotmail.com","3137189233*","w3Unpocodet0d0", "lisbeyUrrea");
+        String expect = "¡Usuario resgistrado exitosamente!";
+        when(userConfigRepository.registerUser(user)).thenReturn(expect);
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+        when(userConfigRepository.passwordRegExp()).thenReturn("^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{8,16}$");
+        when(userConfigRepository.nickNameRegExp()).thenReturn("^[a-zA-Z]*$");
+
+        managerUserBl.registerUser(user);
+        verify(userConfigRepository,times(0)).registerUser(user);
+        verify(userConfigRepository,times(1)).emailRegExp();
+        verify(userConfigRepository,times(1)).passwordRegExp();
+        verify(userConfigRepository,times(1)).nickNameRegExp();
+    }
 }

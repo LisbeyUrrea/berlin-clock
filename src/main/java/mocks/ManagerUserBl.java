@@ -42,16 +42,17 @@ public class ManagerUserBl {
 
     private boolean isValidUser(UserManager user) {
 
-        if(!(validateNullOrEmpty(user.getName()) )) throw new IllegalArgumentException("El campo nombre es requerido");
-        if(!(validateNullOrEmpty(user.getLastName()))) throw new IllegalArgumentException("El campo apellido es requerido");
-        if(!(validateNullOrEmpty(user.getEmail()))) throw new IllegalArgumentException("El campo email es requerido");
-        if(!(validateNullOrEmpty(user.getPassword()))) throw new IllegalArgumentException("El campo contraseña es requerido");
-        if(!(validateNullOrEmpty(user.getMobile()))) throw new IllegalArgumentException("El campo celular es requerido");
-        if(!(validateNullOrEmpty(user.getNickname())))throw new IllegalArgumentException("El campo nick name es requerido");
+        if(!(validateNullOrEmpty(user.getName()) )) throw new IllegalArgumentException("El campo nombre es requerido.");
+        if(!(validateNullOrEmpty(user.getLastName()))) throw new IllegalArgumentException("El campo apellido es requerido.");
+        if(!(validateNullOrEmpty(user.getEmail()))) throw new IllegalArgumentException("El campo email es requerido.");
+        if(!(validateNullOrEmpty(user.getPassword()))) throw new IllegalArgumentException("El campo contraseña es requerido.");
+        if(!(validateNullOrEmpty(user.getMobile()))) throw new IllegalArgumentException("El campo celular es requerido.");
+        if(!(validateNullOrEmpty(user.getNickname())))throw new IllegalArgumentException("El campo nick name es requerido.");
 
-        if(!validateEmail(user.getEmail())) throw new IllegalArgumentException("Por favor digita un email valido");
-        if(!validatePassword(user.getPassword())) throw new IllegalArgumentException("La contraseña es incorrecta");
-        if(!validateNickName(user.getNickname())) throw new IllegalArgumentException("El Nick Name no tiene un formato valido");
+        if(!validateEmail(user.getEmail())) throw new IllegalArgumentException("El email enviado no tiene un formato valido.");
+        if(!validatePassword(user.getPassword())) throw new IllegalArgumentException("La contraseña enviada no tiene un formato valido.");
+        if(!validateNickName(user.getNickname())) throw new IllegalArgumentException("El nickName enviado no tiene un formato valido.");
+        if(!isNumber(user.getMobile())) throw new IllegalArgumentException("El celular solo debe tener números.");
 
         return true;
 
