@@ -1,5 +1,7 @@
 package mocks;
 
+import java.util.List;
+
 public interface IUserConfigRepository {
 
     String passwordRegExp();
@@ -9,4 +11,8 @@ public interface IUserConfigRepository {
     String nickNameRegExp();
 
     String registerUser(UserManager userManager);
+
+    List<UserManager> findAll();
+
+    UserManager findUser(Integer idUser);
 }

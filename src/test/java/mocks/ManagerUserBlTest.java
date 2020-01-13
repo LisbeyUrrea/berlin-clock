@@ -8,6 +8,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 
 import static org.junit.Assert.*;
@@ -51,8 +55,23 @@ public class ManagerUserBlTest {
             "lisbey@hotmail, false",
             "@hotmail.com, false",
             "lisbey@hotmail.com, true",
+            "lisbey@hotmail.com.co, true",
     })
     public void methodValidateEmailShouldValidateIfEmailIsCorrect(String email, boolean expect) {
+        when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
+
+        boolean result = managerUserBl.validateEmail(email);
+
+        Assert.assertEquals(expect, result);
+        verify(userConfigRepository, times(1)).emailRegExp();
+
+    }
+
+    @Test
+    public void methodValidateEmailShouldValidateIfEmailIsCorrect() {
+        String email = "urlisbey@hotmail,com";
+        boolean expect = false;
+
         when(userConfigRepository.emailRegExp()).thenReturn("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$");
 
         boolean result = managerUserBl.validateEmail(email);
@@ -79,6 +98,7 @@ public class ManagerUserBlTest {
         verify(userConfigRepository, times(1)).nickNameRegExp();
 
     }
+
 
 
     @Test
@@ -238,5 +258,51 @@ public class ManagerUserBlTest {
         verify(userConfigRepository,times(1)).emailRegExp();
         verify(userConfigRepository,times(1)).passwordRegExp();
         verify(userConfigRepository,times(1)).nickNameRegExp();
+    }
+
+    @Test
+    public void methodFindUsersShouldReturnAListOfUser() {
+        List<UserManager> expect = new ArrayList<>();
+        expect.add(new UserManager("Lisbey","Urrea","urlisbey@hotmail.com","3137189233","w3Unpocodet0d0","lisbeyUrrea"));
+        expect.add(new UserManager("Pedro","perez","pedro@hotmail.com","3105897456","w3Unpocodet0d0","pedroPerez"));
+        expect.add(new UserManager("Jian","Gallego","jian@gmail.com","3215889756","w3Unpocodet0d0","jianGallego"));
+
+        when(userConfigRepository.findAll()).thenReturn(expect);
+
+        List<UserManager> result = managerUserBl.findUsers();
+
+        assertEquals(expect,result);
+        verify(userConfigRepository,times(1)).findAll();
+    }
+
+    @Test
+    public void methodFindUserByIdShouldReturnAUserWhenTheIdIs1() {
+        UserManager expect = new UserManager("Lisbey","Urrea","urlisbey@hotmail.com","3137189233","w3Unpocodet0d0","lisbeyUrrea");
+        when(userConfigRepository.findUser(1)).thenReturn(expect);
+
+        UserManager result = managerUserBl.findUserById(1);
+
+        assertEquals(expect,result);
+        verify(userConfigRepository, times(1)).findUser(1);
+
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void methodFindUserByIdShouldReturnIllegalArgumentExceptionWhenTheUserIsNoFound() {
+        when(userConfigRepository.findUser(0)).thenReturn(null);
+
+        managerUserBl.findUserById(1);
+
+        verify(userConfigRepository, times(1)).findUser(1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void methodFindUserByIdShouldReturnIllegalArgumentExceptionWhenTheIdIsNull() {
+        when(userConfigRepository.findUser(null)).thenReturn(null);
+
+        managerUserBl.findUserById(1);
+
+        verify(userConfigRepository, times(1)).findUser(1);
     }
 }

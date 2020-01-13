@@ -25,7 +25,7 @@ public class DigitalClockTestWithParams {
             "YRRROROOOYYRYYRYYRYOOOOO, 16:50:00",
             "ORROOROOOYYRYYRYOOOOYYOO, 11:37:59"
     })
-    public void methodConvertingBerlinTimeToDigitalTimeSouldReturnAnHourWhenParameterIsBerlinHour(String time, String expected) {
+    public void methodConvertingBerlinTimeToDigitalTimeShouldReturnAnHourWhenParameterIsBerlinHour(String time, String expected) {
         String result = digitalClock.convertingBerlinTimeToDigitalTime(time);
         Assert.assertEquals(expected,result);
     }

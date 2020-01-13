@@ -1,5 +1,9 @@
 package mocks;
 
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+
+import java.util.List;
+
 public class ManagerUserBl {
 
     public static final boolean TRUE = true;
@@ -10,6 +14,10 @@ public class ManagerUserBl {
 
     public ManagerUserBl(IUserConfigRepository userConfigRepository) {
         this.userConfigRepository = userConfigRepository;
+    }
+
+    public List<UserManager> findUsers() {
+        return userConfigRepository.findAll();
     }
 
     public boolean validatePassword(String password) {
@@ -67,5 +75,20 @@ public class ManagerUserBl {
 
         return TRUE;
 
+    }
+
+    public UserManager findUserById(Integer idUser) {
+        UserManager user = null;
+       try {
+           if(idUser == null) throw new IllegalArgumentException("El Id no puede ser nulo");
+            user = userConfigRepository.findUser(idUser);
+            if(user==null) throw new IllegalArgumentException("no existe un usuario con el id "+idUser);
+
+        }catch (IllegalArgumentException e){
+           throw new IllegalArgumentException(e.getMessage());
+
+       }
+
+        return user;
     }
 }
