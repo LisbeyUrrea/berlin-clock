@@ -2,6 +2,10 @@ package mocks;
 
 public class ManagerUserBl {
 
+    public static final boolean TRUE = true;
+    public static final boolean FALSE = false;
+    public static  final String REGULAR_EXPRESSION_ONLY_NUMBERS = "^[0-9]*$";
+
     private IUserConfigRepository userConfigRepository;
 
     public ManagerUserBl(IUserConfigRepository userConfigRepository) {
@@ -9,9 +13,7 @@ public class ManagerUserBl {
     }
 
     public boolean validatePassword(String password) {
-
         String regExp = userConfigRepository.passwordRegExp();
-
         return password.matches(regExp);
     }
 
@@ -26,17 +28,26 @@ public class ManagerUserBl {
     }
 
     public boolean validateNullOrEmpty(String param) {
-        return param == null ? false:
-                param.equals("") ? false: true;
+        if(param == null) return FALSE;
+        if(param.equals("")) return FALSE;
+
+        return TRUE;
     }
 
 
     public boolean isNumber(String number) {
-        return number.matches("^[0-9]*$");
+        return number.matches(REGULAR_EXPRESSION_ONLY_NUMBERS);
     }
 
     public String registerUser(UserManager user) {
-        return isValidUser(user) ? userConfigRepository.registerUser(user) : "";
+        try {
+
+            return isValidUser(user) ? userConfigRepository.registerUser(user) : "";
+
+        }catch (IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
 
     }
 
@@ -54,7 +65,7 @@ public class ManagerUserBl {
         if(!validateNickName(user.getNickname())) throw new IllegalArgumentException("El nickName enviado no tiene un formato valido.");
         if(!isNumber(user.getMobile())) throw new IllegalArgumentException("El celular solo debe tener números.");
 
-        return true;
+        return TRUE;
 
     }
 }
